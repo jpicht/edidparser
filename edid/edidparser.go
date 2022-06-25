@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -108,6 +109,8 @@ type Edid struct {
 	MonitorRangeLimitDescriptors []MonitorRangeLimitDescriptor
 
 	NumberOfExtensions byte
+
+	Strings []string
 }
 
 func NewEdid(edidBytes []byte) (*Edid, error) {
@@ -383,6 +386,8 @@ func NewEdid(edidBytes []byte) (*Edid, error) {
 				monitorRangeDescriptor.MaximumHorizontalLineRate = temp[8]
 				monitorRangeDescriptor.MaximumPixelClockRate = temp[9] * 10
 				edid.MonitorRangeLimitDescriptors = append(edid.MonitorRangeLimitDescriptors, monitorRangeDescriptor)
+			case 0xFE:
+				edid.Strings = append(edid.Strings, strings.TrimSpace(string(temp[5:])))
 			}
 		} else {
 			edid.DetailedTimingDescriptors = append(edid.DetailedTimingDescriptors, descriptor)
